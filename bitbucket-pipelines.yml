@@ -23,11 +23,13 @@ definitions:
     - step: &build-fake
         name: Build and Push Docker Image
         image: google/cloud-sdk:latest
-        script:
+        script:         
           - echo "Build and push Docker image to container registry"
           - IMAGE_NAME=gcr.io/$PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT
-          - echo $BITBUCKET_REPO_SLUG
           - echo $IMAGE_NAME
+          - IMAGE_NAME: 'gcr.io/$PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT'
+          - echo $IMAGE_NAME
+          - echo $BITBUCKET_REPO_SLUG
 
     - step: &deploy-stage-step
         name: Deploy Staging
