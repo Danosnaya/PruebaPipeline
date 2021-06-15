@@ -35,7 +35,8 @@ definitions:
         script:
           - sed -i "s|{{image}}|gcr.io/$GCLOUD_PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT|g" simple-app.yml
           - sed -i "s|{{replicas}}|1|g" simple-app.yml
-          - echo $GCLOUD_API_KEYFILE | base64 > KEY_FILE
+          - echo $GCLOUD_API_KEYFILE > ~/.gcloud-api-key.json
+          - export KEY_FILE=$(cat ~/.gcloud-api-key.json | base64)
           - pipe: atlassian/google-gke-kubectl-run:1.3.1
             variables:
               KEY_FILE: '$KEY_FILE'
@@ -57,7 +58,8 @@ definitions:
         script:
           - sed -i "s|{{image}}|gcr.io/$GCLOUD_PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT|g" simple-app.yml
           - sed -i "s|{{replicas}}|3|g" simple-app.yml
-          - echo $GCLOUD_API_KEYFILE | base64 > KEY_FILE          
+          - echo $GCLOUD_API_KEYFILE > ~/.gcloud-api-key.json
+          - export KEY_FILE=$(cat ~/.gcloud-api-key.json | base64)          
           - pipe: atlassian/google-gke-kubectl-run:1.3.1
             variables:
               KEY_FILE: '$KEY_FILE'
