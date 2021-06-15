@@ -25,7 +25,7 @@ definitions:
         image: google/cloud-sdk:latest
         script:         
           - echo "Build and push Docker image to container registry"
-          - IMAGE_NAME=gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}
+          - export IMAGE_NAME=gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}
           - echo ${IMAGE_NAME}
           - IMAGE_NAME: 'gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}'
           - echo ${IMAGE_NAME}
