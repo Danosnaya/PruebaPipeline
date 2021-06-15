@@ -11,12 +11,12 @@ definitions:
         name: Build and Push Docker Image
         image: google/cloud-sdk:latest
         script:
-          - echo $GCLOUD_API_KEYFILE > ~/.gcloud-api-key.json
+          - echo ${GCLOUD_API_KEYFILE} > ~/.gcloud-api-key.json
           - gcloud auth activate-service-account --key-file ~/.gcloud-api-key.json
           - gcloud auth configure-docker --quiet
-          - export IMAGE_NAME=gcr.io/$PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT
-          - docker build -t $IMAGE_NAME .
-          - docker push $IMAGE_NAME
+          - export IMAGE_NAME=gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}
+          - docker build -t ${IMAGE_NAME} .
+          - docker push ${IMAGE_NAME}
         services:
           - docker
 
@@ -25,17 +25,17 @@ definitions:
         image: google/cloud-sdk:latest
         script:         
           - echo "Build and push Docker image to container registry"
-          - IMAGE_NAME=gcr.io/$PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT
-          - echo $IMAGE_NAME
-          - IMAGE_NAME: 'gcr.io/$PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT'
-          - echo $IMAGE_NAME
-          - echo $BITBUCKET_REPO_SLUG
+          - IMAGE_NAME=gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}
+          - echo ${IMAGE_NAME}
+          - IMAGE_NAME: 'gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}'
+          - echo ${IMAGE_NAME}
+          - echo ${BITBUCKET_REPO_SLUG}
 
     - step: &deploy-stage-step
         name: Deploy Staging
         deployment: staging
         script:
-          - sed -i "s|{{image}}|gcr.io/$PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT|g" simple-app.yml
+          - sed -i "s|{{image}}|gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}|g" simple-app.yml
           - sed -i "s|{{replicas}}|1|g" simple-app.yml
           - pipe: atlassian/google-gke-kubectl-run:1.3.1
             variables:
@@ -56,7 +56,7 @@ definitions:
         name: Deploy Production
         deployment: production
         script:
-          - sed -i "s|{{image}}|gcr.io/$PROJECT_ID/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT|g" simple-app.yml
+          - sed -i "s|{{image}}|gcr.io/${PROJECT_ID}/${BITBUCKET_REPO_SLUG}:${BITBUCKET_COMMIT}|g" simple-app.yml
           - sed -i "s|{{replicas}}|3|g" simple-app.yml
           - pipe: atlassian/google-gke-kubectl-run:1.3.1
             variables:
