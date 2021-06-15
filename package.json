@@ -1,0 +1,30 @@
+{
+  "name": "hw-pipeline",
+  "version": "1.0.0",
+  "description": "Sample description",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha ./test/* --reporter list --exit",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://fcastrillo_sh@bitbucket.org/sh-opendevops/hw-pipeline.git"
+  },
+  "keywords": [
+    "pipeline"
+  ],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/sh-opendevops/hw-pipeline#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.0",
+    "supertest": "^6.1.3"
+  }
+}
