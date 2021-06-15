@@ -1,0 +1,95 @@
+stages:
+  - test
+  - build
+  - gkedeploy_stage
+  - gkedeploy_prod
+
+cache:
+  paths:
+    - node_modules/
+
+testing:
+  stage: test
+  image: node:14
+  script:  
+    - npm install
+    - npm test
+  artifacts:
+    paths:
+      - node_modules/
+      - ./
+
+docker build:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - docker info
+    - docker login registry.gitlab.com -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
+  script:
+    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:$CI_COMMIT_REF_SLUG .
+    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:$CI_COMMIT_REF_SLUG
+  after_script:
+    - docker logout ${CI_REGISTRY}
+
+gcloud_deploy_stage_fake:
+  stage: gkedeploy_stage
+  environment:
+    name: staging
+  script:
+    - echo "Deploy to staging environment"
+# Uncomment the following line to avoid executing this job
+#  when: manual
+  except:
+    - master  
+
+gcloud_deploy_stage:
+  stage: gkedeploy_stage
+  image: google/cloud-sdk
+  script:
+    - gcloud auth activate-service-account --key-file $GCLOUD_API_KEYFILE
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - gcloud config set compute/zone $GCLOUD_ZONE
+    - gcloud container clusters get-credentials $GCLOUD_CLUSTER_NAME
+    - sed -i "s|{{image}}|$CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG|g" simple-app.yml
+    - sed -i "s|{{replicas}}|1|g" simple-app.yml
+    - sed -i "s|{{env}}|stage|g" simple-app.yml     
+    - kubectl apply -f simple-app.yml
+  environment:
+    name: staging
+# Comment the following line to execute this job
+  when: manual
+  except:
+    - master  
+
+gcloud_deploy_prod_fake:
+  stage: gkedeploy_prod
+  environment:
+    name: production
+  script:
+    - echo "Deploy to production environment"
+# Uncomment the following line to avoid executing this job
+#  when: manual
+  only:
+    - master  
+  
+
+gcloud_deploy_prod:
+  stage: gkedeploy_prod
+  image: google/cloud-sdk
+  script:
+    - gcloud auth activate-service-account --key-file $GCLOUD_API_KEYFILE
+    - gcloud config set project $GCLOUD_PROJECT_ID
+    - gcloud config set compute/zone $GCLOUD_ZONE
+    - gcloud container clusters get-credentials $GCLOUD_CLUSTER_NAME
+    - sed -i "s|{{image}}|$CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_SLUG|g" simple-app.yml
+    - sed -i "s|{{replicas}}|3|g" simple-app.yml
+    - sed -i "s|{{env}}|production|g" simple-app.yml     
+    - kubectl apply -f simple-app.yml
+  environment:
+    name: production
+# Comment the following line to execute this job
+  when: manual
+  only:
+    - master  
