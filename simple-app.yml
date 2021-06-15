@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: simple-app
+  name: simple-app-{{env}}
 spec:
   selector:
     matchLabels:
-      app: simple-app
+      app: simple-app-{{env}}
   replicas: {{replicas}}
   template:
     metadata:
       labels:
-        app: simple-app
+        app: simple-app-{{env}}
     spec:
       containers:
-        - name: simple-app
+        - name: simple-app-{{env}}
           image: {{image}}
           ports:
             - containerPort: 3000
@@ -21,10 +21,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: simple-app-entrypoint
+  name: simple-app-entrypoint-{{env}}
 spec:
   selector:
-    app: simple-app
+    app: simple-app-{{env}}
   type: LoadBalancer
   ports:
     - protocol: TCP
