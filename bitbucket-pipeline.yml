@@ -86,7 +86,7 @@ pipelines:
 #      - step: *build-step
 #      - step: *deploy-stage-step
   branches:
-    main:
+    master:
       - step: *test-step
       - step: *build-fake
       - step: *deploy-prod-fake
